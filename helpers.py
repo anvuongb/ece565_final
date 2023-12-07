@@ -76,7 +76,7 @@ def ml_estimate_sigma_gamma(X, gamma_init, sigma_init,
     sigma_list = []
     sigma_list.append(sigma_curr)
 
-    for i in tqdm.tqdm(np.arange(max_steps)):
+    for i in np.arange(max_steps):
         # alternating between gamma and sigma, this is much more stable
         for j in range(3):
             grad_gamma_ = grad_gamma(X, gamma_curr_, sigma_curr)

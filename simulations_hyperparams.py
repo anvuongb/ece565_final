@@ -123,7 +123,7 @@ for N_data in tqdm.tqdm(N_data_list):
                 gamma_init = gamma + np.random.randn()
 
             # print(f"Run {idx}, using initial gamma={sigma_init}, sigma={gamma_init}")
-            gamma_est_, sigma_est_, _, _ = ml_estimate_sigma_gamma(x, gamma_init, sigma_init)
+            gamma_est_, sigma_est_, _, _ = ml_estimate_sigma_gamma(x, gamma_init, sigma_init, max_steps=100)
             gamma_est += gamma_est_
             sigma_est += sigma_est_
         gamma_est /= N_estimates_sigma_gamma
