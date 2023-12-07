@@ -5,12 +5,16 @@ import matplotlib.pyplot as plt
 import tqdm
 from helpers import *
 
+# similar to simulations.py
+# but this file also estimates gamma, sigma using gradient ascent
+
 # Monte Carlo sims - Gamma
 # params
 sigma = 1
 gamma_list = np.arange(0.1, 10.1, 0.1) # gamma from 0.1 to 10 with 0.1 spacing
 N_sims = 200
 N_data = 2000
+N_estimates_sigma_gamma = 1
 
 # runs
 crlb_ = crlb(sigma, N_data)
@@ -18,6 +22,7 @@ mse_mle_ret = []
 mse_map_ret = []
 mse_mmse_ret = []
 print("Running Monte Carlo - Gamma")
+
 for gamma in tqdm.tqdm(gamma_list):
     mse_mle = []
     mse_map = []
@@ -28,9 +33,30 @@ for gamma in tqdm.tqdm(gamma_list):
         s = np.random.laplace(scale=gamma, size=N_data)
         x = n + s
 
+        # estimate hyper parameters
+        # print("Start estimating gamma, sigma")
+        for idx in range(N_estimates_sigma_gamma):
+            gamma_est = 0
+            sigma_est = 0
+            sigma_init = sigma + np.random.randn()
+            while sigma_init < 0:
+                sigma_init = sigma + np.random.randn()
+
+            gamma_init = gamma + np.random.randn()
+            while gamma_init < 0:
+                gamma_init = gamma + np.random.randn()
+
+            # print(f"Run {idx}, using initial gamma={sigma_init}, sigma={gamma_init}")
+            gamma_est_, sigma_est_, _, _ = ml_estimate_sigma_gamma(x, gamma_init, sigma_init)
+            gamma_est += gamma_est_
+            sigma_est += sigma_est_
+        gamma_est /= N_estimates_sigma_gamma
+        sigma_est /= N_estimates_sigma_gamma
+        # print(f"Done estimating hyperparams, gamma_est={gamma_est}, sigma_est={sigma_est}")
+
         s_mle = mle_estimate(x)
-        s_map = map_estimate(x, sigma, gamma)
-        s_mmse = mmse_estimate(x, sigma, gamma)
+        s_map = map_estimate(x, sigma_est, gamma_est)
+        s_mmse = mmse_estimate(x, sigma_est, gamma_est)
 
         mse_mle.append(mse(s_mle, s))
         mse_map.append(mse(s_map, s))
@@ -83,9 +109,30 @@ for N_data in tqdm.tqdm(N_data_list):
         s = np.random.laplace(scale=gamma, size=N_data)
         x = n + s
 
+        # estimate hyper parameters
+        # print("Start estimating gamma, sigma")
+        for idx in range(N_estimates_sigma_gamma):
+            gamma_est = 0
+            sigma_est = 0
+            sigma_init = sigma + np.random.randn()
+            while sigma_init < 0:
+                sigma_init = sigma + np.random.randn()
+
+            gamma_init = gamma + np.random.randn()
+            while gamma_init < 0:
+                gamma_init = gamma + np.random.randn()
+
+            # print(f"Run {idx}, using initial gamma={sigma_init}, sigma={gamma_init}")
+            gamma_est_, sigma_est_, _, _ = ml_estimate_sigma_gamma(x, gamma_init, sigma_init)
+            gamma_est += gamma_est_
+            sigma_est += sigma_est_
+        gamma_est /= N_estimates_sigma_gamma
+        sigma_est /= N_estimates_sigma_gamma
+        # print(f"Done estimating hyperparams, gamma_est={gamma_est}, sigma_est={sigma_est}")
+
         s_mle = mle_estimate(x)
-        s_map = map_estimate(x, sigma, gamma)
-        s_mmse = mmse_estimate(x, sigma, gamma)
+        s_map = map_estimate(x, sigma_est, gamma_est)
+        s_mmse = mmse_estimate(x, sigma_est, gamma_est)
 
         mse_mle.append(mse(s_mle, s))
         mse_map.append(mse(s_map, s))
