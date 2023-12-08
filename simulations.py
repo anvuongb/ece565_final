@@ -10,7 +10,7 @@ from helpers import *
 sigma = 1
 gamma_list = np.arange(0.1, 10.1, 0.1) # gamma from 0.1 to 10 with 0.1 spacing
 N_sims = 200
-N_data = 200
+N_data = 2000
 
 # runs
 crlb_ = crlb(sigma, N_data)
@@ -64,7 +64,7 @@ plt.savefig("sim_1.png")
 # params
 sigma = 1
 N_data_list = np.arange(1, 2000, 10) # gamma from 0.1 to 10 with 0.1 spacing
-N_sims = 200
+N_sims = 2000
 gamma = 1
 
 # runs

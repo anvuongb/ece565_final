@@ -15,7 +15,7 @@ def mle_estimate(X):
 def map_estimate(X, sigma, gamma):
     thresh = sigma**2/gamma
     ind_pos = X > thresh
-    ind_neg = X < thresh
+    ind_neg = X < -thresh
     
     s = np.zeros(X.shape)
     s[ind_pos] = X[ind_pos] - thresh
@@ -63,6 +63,19 @@ def grad_sigma(X, gamma, sigma):
     grad = N*sigma/(gamma**2) + np.sum((num1 + num2)/denom)
     
     return grad
+
+def ml_estimate_gamma(X, gamma_init, sigma, 
+                        max_steps=200, step_size=0.001, early_stopping_ratio=0.01):
+    gamma_curr = gamma_init
+    gamma_curr_ = gamma_init
+    gamma_list = []
+    gamma_list.append(gamma_curr)
+
+    for i in np.arange(max_steps):
+        gamma_curr = gamma_curr + step_size*grad_gamma(X, gamma_curr_, sigma)
+        gamma_list.append(gamma_curr)
+    
+    return gamma_curr, gamma_list
     
 def ml_estimate_sigma_gamma(X, gamma_init, sigma_init, 
                             max_steps=200, step_size=0.001, early_stopping_ratio=0.01):

@@ -34,29 +34,18 @@ for gamma in tqdm.tqdm(gamma_list):
         x = n + s
 
         # estimate hyper parameters
-        # print("Start estimating gamma, sigma")
+        gamma_est = 0
         for idx in range(N_estimates_sigma_gamma):
-            gamma_est = 0
-            sigma_est = 0
-            sigma_init = sigma + np.random.randn()
-            while sigma_init < 0:
-                sigma_init = sigma + np.random.randn()
-
             gamma_init = gamma + np.random.randn()
             while gamma_init < 0:
                 gamma_init = gamma + np.random.randn()
-
-            # print(f"Run {idx}, using initial gamma={sigma_init}, sigma={gamma_init}")
-            gamma_est_, sigma_est_, _, _ = ml_estimate_sigma_gamma(x, gamma_init, sigma_init)
-            gamma_est += gamma_est_
-            sigma_est += sigma_est_
+            gamma_, _ = ml_estimate_gamma(x, gamma_init, sigma)
+            gamma_est += gamma_
         gamma_est /= N_estimates_sigma_gamma
-        sigma_est /= N_estimates_sigma_gamma
-        # print(f"Done estimating hyperparams, gamma_est={gamma_est}, sigma_est={sigma_est}")
 
         s_mle = mle_estimate(x)
-        s_map = map_estimate(x, sigma_est, gamma_est)
-        s_mmse = mmse_estimate(x, sigma_est, gamma_est)
+        s_map = map_estimate(x, sigma, gamma_est)
+        s_mmse = mmse_estimate(x, sigma, gamma_est)
 
         mse_mle.append(mse(s_mle, s))
         mse_map.append(mse(s_map, s))
@@ -111,29 +100,18 @@ for N_data in tqdm.tqdm(N_data_list):
         x = n + s
 
         # estimate hyper parameters
-        # print("Start estimating gamma, sigma")
+        gamma_est = 0
         for idx in range(N_estimates_sigma_gamma):
-            gamma_est = 0
-            sigma_est = 0
-            sigma_init = sigma + np.random.randn()
-            while sigma_init < 0:
-                sigma_init = sigma + np.random.randn()
-
             gamma_init = gamma + np.random.randn()
             while gamma_init < 0:
                 gamma_init = gamma + np.random.randn()
-
-            # print(f"Run {idx}, using initial gamma={sigma_init}, sigma={gamma_init}")
-            gamma_est_, sigma_est_, _, _ = ml_estimate_sigma_gamma(x, gamma_init, sigma_init, max_steps=100)
-            gamma_est += gamma_est_
-            sigma_est += sigma_est_
+            gamma_, _ = ml_estimate_gamma(x, gamma_init, sigma)
+            gamma_est += gamma_
         gamma_est /= N_estimates_sigma_gamma
-        sigma_est /= N_estimates_sigma_gamma
-        # print(f"Done estimating hyperparams, gamma_est={gamma_est}, sigma_est={sigma_est}")
 
         s_mle = mle_estimate(x)
-        s_map = map_estimate(x, sigma_est, gamma_est)
-        s_mmse = mmse_estimate(x, sigma_est, gamma_est)
+        s_map = map_estimate(x, sigma, gamma_est)
+        s_mmse = mmse_estimate(x, sigma, gamma_est)
 
         mse_mle.append(mse(s_mle, s))
         mse_map.append(mse(s_map, s))
