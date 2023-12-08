@@ -10,7 +10,7 @@ from helpers import *
 sigma = 1
 gamma_list = np.arange(0.1, 10.1, 0.1) # gamma from 0.1 to 10 with 0.1 spacing
 N_sims = 200
-N_data = 2000
+N_data = 200
 
 # runs
 crlb_ = crlb(sigma, N_data)
@@ -56,6 +56,7 @@ plt.xlabel("SNR ($\gamma^{2}/\sigma^{2}$)")
 plt.ylabel("MSE")
 plt.grid(True)
 plt.title("MSE vs $\gamma^{2}/\sigma^{2}$")
+plt.tight_layout()
 # plt.show()
 plt.savefig("sim_1.png")
 
@@ -109,5 +110,6 @@ plt.xlabel("# data points")
 plt.ylabel("MSE")
 plt.grid(True)
 plt.title(f"MSE vs #data points - $\gamma$={gamma}")
+plt.tight_layout()
 # plt.show()
 plt.savefig("sim_2.png")
