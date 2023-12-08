@@ -57,7 +57,7 @@ plt.ylabel("MSE")
 plt.grid(True)
 plt.title("MSE vs $\gamma^{2}/\sigma^{2}$")
 # plt.show()
-plt.savefig("sim_1.jpeg")
+plt.savefig("sim_1.png")
 
 # Monte Carlo sims - N_data
 # params
@@ -110,4 +110,4 @@ plt.ylabel("MSE")
 plt.grid(True)
 plt.title(f"MSE vs #data points - $\gamma$={gamma}")
 # plt.show()
-plt.savefig("sim_2.jpeg")
+plt.savefig("sim_2.png")

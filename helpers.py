@@ -4,13 +4,13 @@ import tqdm
 
 ## Estimators for s
 def crlb(sigma, N):
-    return sigma**2/N
+    return sigma**2
 
 def mse(s_pred, s_true):
     return np.mean(np.square(s_pred-s_true))
 
 def mle_estimate(X):
-    return np.mean(X)
+    return X
 
 def map_estimate(X, sigma, gamma):
     thresh = sigma**2/gamma
