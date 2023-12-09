@@ -4,6 +4,7 @@ matplotlib.use('agg') # fix pyplot hangs in wsl2 https://github.com/matplotlib/m
 import matplotlib.pyplot as plt
 import tqdm
 from helpers import *
+from hyperparameters_estimations import gradient_descent_line_search
 
 # similar to simulations.py
 # but this file also estimates gamma, sigma using gradient ascent
@@ -14,7 +15,6 @@ sigma = 1
 gamma_list = np.arange(0.1, 10.1, 0.1) # gamma from 0.1 to 10 with 0.1 spacing
 N_sims = 200
 N_data = 2000
-N_estimates_sigma_gamma = 1
 
 # runs
 crlb_ = crlb(sigma, N_data)
@@ -33,19 +33,22 @@ for gamma in tqdm.tqdm(gamma_list):
         s = np.random.laplace(scale=gamma, size=N_data)
         x = n + s
 
-        # estimate hyper parameters
-        gamma_est = 0
-        for idx in range(N_estimates_sigma_gamma):
+        gamma_est, sigma_est = -1, -1
+        while gamma_est is None or gamma_est == np.nan or gamma_est < 0 or sigma_est is None or sigma_est == np.nan or sigma_est < 0:
+            # estimate hyper parameters
             gamma_init = gamma + np.random.randn()
             while gamma_init < 0:
                 gamma_init = gamma + np.random.randn()
-            gamma_, _ = ml_estimate_gamma(x, gamma_init, sigma)
-            gamma_est += gamma_
-        gamma_est /= N_estimates_sigma_gamma
+                
+            sigma_init = sigma + np.random.randn()
+            while sigma_init < 0:
+                sigma_init = sigma + np.random.randn()
+
+            gamma_est, sigma_est = gradient_descent_line_search(gamma_init, sigma_init, x, steps=50, default_alpha=0.001)
 
         s_mle = mle_estimate(x)
-        s_map = map_estimate(x, sigma, gamma_est)
-        s_mmse = mmse_estimate(x, sigma, gamma_est)
+        s_map = map_estimate(x, sigma_est, gamma_est)
+        s_mmse = mmse_estimate(x, sigma_est, gamma_est)
 
         mse_mle.append(mse(s_mle, s))
         mse_map.append(mse(s_map, s))
@@ -99,15 +102,18 @@ for N_data in tqdm.tqdm(N_data_list):
         s = np.random.laplace(scale=gamma, size=N_data)
         x = n + s
 
-        # estimate hyper parameters
-        gamma_est = 0
-        for idx in range(N_estimates_sigma_gamma):
+        gamma_est, sigma_est = -1, -1
+        while gamma_est is None or gamma_est == np.nan or gamma_est < 0 or sigma_est is None or sigma_est == np.nan or sigma_est < 0:
+            # estimate hyper parameters
             gamma_init = gamma + np.random.randn()
             while gamma_init < 0:
                 gamma_init = gamma + np.random.randn()
-            gamma_, _ = ml_estimate_gamma(x, gamma_init, sigma)
-            gamma_est += gamma_
-        gamma_est /= N_estimates_sigma_gamma
+                
+            sigma_init = sigma + np.random.randn()
+            while sigma_init < 0:
+                sigma_init = sigma + np.random.randn()
+
+            gamma_est, sigma_est = gradient_descent_line_search(gamma_init, sigma_init, x, steps=50, default_alpha=0.001)
 
         s_mle = mle_estimate(x)
         s_map = map_estimate(x, sigma, gamma_est)
