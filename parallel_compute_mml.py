@@ -8,6 +8,7 @@ from hyperparameters_estimations import gradient_descent_line_search
 from multiprocessing import Pool, cpu_count
 
 # Thread-based parallelized computation of Monte Carlo
+# This also uses the MML to estimate sigma and gamma for each run
 
 sigma = 1
 N_sims = 200
@@ -23,9 +24,22 @@ def compute_for_each_gamma(gamma):
         s = np.random.laplace(scale=gamma, size=N_data)
         x = n + s
 
+        gamma_est, sigma_est = -1, -1
+        while gamma_est is None or gamma_est == np.nan or gamma_est < 0 or sigma_est is None or sigma_est == np.nan or sigma_est < 0:
+            # estimate hyper parameters
+            gamma_init = gamma + np.random.randn()
+            while gamma_init < 0:
+                gamma_init = gamma + np.random.randn()
+                
+            sigma_init = sigma + np.random.randn()
+            while sigma_init < 0:
+                sigma_init = sigma + np.random.randn()
+
+            gamma_est, sigma_est = gradient_descent_line_search(gamma_init, sigma_init, x, steps=50, default_alpha=0.001)
+
         s_mle = mle_estimate(x)
-        s_map = map_estimate(x, sigma, gamma)
-        s_mmse = mmse_estimate(x, sigma, gamma)
+        s_map = map_estimate(x, sigma_est, gamma_est)
+        s_mmse = mmse_estimate(x, sigma_est, gamma_est)
 
         mse_mle.append(mse(s_mle, s))
         mse_map.append(mse(s_map, s))
@@ -77,4 +91,4 @@ plt.grid(True)
 plt.title("MSE vs $\gamma^{2}/\sigma^{2}$")
 plt.tight_layout()
 # plt.show()
-plt.savefig("sim_1.png")
+plt.savefig("sim_1_hyperparam.png")
