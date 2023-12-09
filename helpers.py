@@ -72,7 +72,7 @@ def ml_estimate_gamma(X, gamma_init, sigma,
     gamma_list.append(gamma_curr)
 
     for i in np.arange(max_steps):
-        gamma_curr = gamma_curr + step_size*grad_gamma(X, gamma_curr_, sigma)
+        gamma_curr = gamma_curr + step_size*grad_gamma(X, gamma_curr, sigma)
         gamma_list.append(gamma_curr)
     
     return gamma_curr, gamma_list
