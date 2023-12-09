@@ -64,6 +64,16 @@ def grad_sigma(X, gamma, sigma):
     
     return grad
 
+def ml_objective_gamma_sigma(X, gamma, sigma):
+    N = len(X)
+    
+    sum1 = N*np.log(1/2/gamma)
+    sum2 = N*sigma**2//2/(gamma**2)
+    sum3 = np.log(np.exp(X/gamma)*norm.cdf((-X-sigma**2/gamma)/sigma) + np.exp(-X/gamma)*norm.cdf((X-sigma**2/gamma)/sigma))
+    sum3 = np.sum(sum3)
+    
+    return sum1 + sum2 + sum3
+
 def ml_estimate_gamma(X, gamma_init, sigma, 
                         max_steps=200, step_size=0.001, early_stopping_ratio=0.01):
     gamma_curr = gamma_init
