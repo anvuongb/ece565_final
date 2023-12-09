@@ -28,7 +28,7 @@ for gamma in tqdm.tqdm(gamma_list):
     mse_map = []
     mse_mmse = []
 
-    for i in range(N_sims):
+    for i in tqdm.tqdm(range(N_sims)):
         n = np.random.randn(N_data)*sigma
         s = np.random.laplace(scale=gamma, size=N_data)
         x = n + s
