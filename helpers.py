@@ -7,7 +7,7 @@ def crlb(sigma, N):
     return sigma**2
 
 def mse(s_pred, s_true):
-    return np.mean(np.square(s_pred-s_true))
+    return np.nanmean(np.square(s_pred-s_true), axis=0) # compute mean across data axis, ignore nan
 
 def mle_estimate(X):
     return X

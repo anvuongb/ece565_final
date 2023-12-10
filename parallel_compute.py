@@ -18,23 +18,19 @@ def compute_for_each_gamma(gamma):
     mse_map = []
     mse_mmse = []
 
-    for _ in range(N_sims):
-        n = np.random.randn(N_data)*sigma
-        s = np.random.laplace(scale=gamma, size=N_data)
-        x = n + s
+    n = np.random.randn(N_data, N_sims)*sigma
+    s = np.random.laplace(scale=gamma, size=(N_data, N_sims))
+    x = n + s
 
-        s_mle = mle_estimate(x)
-        s_map = map_estimate(x, sigma, gamma)
-        s_mmse = mmse_estimate(x, sigma, gamma)
+    s_mle = mle_estimate(x)
+    s_map = map_estimate(x, sigma, gamma)
+    s_mmse = mmse_estimate(x, sigma, gamma)
 
-        mse_mle.append(mse(s_mle, s))
-        mse_map.append(mse(s_map, s))
-        mse_mmse.append(mse(s_mmse, s))
+    mse_mle = mse(s_mle, s)
+    mse_map = mse(s_map, s)
+    mse_mmse = mse(s_mmse, s)
 
-    mse_mle = np.array(mse_mle)
-    mse_map = np.array(mse_map)
-    mse_mmse = np.array(mse_mmse)
-    return [gamma, np.mean(mse_mle[~np.isnan(mse_mle)]), np.mean(mse_map[~np.isnan(mse_map)]), np.mean(mse_mmse[~np.isnan(mse_mmse)])]
+    return [gamma, np.mean(mse_mle), np.mean(mse_map), np.mean(mse_mmse)]
 
 # Monte Carlo sims - Gamma
 # params
@@ -44,9 +40,10 @@ gamma_list = np.arange(0.1, 10.1, 0.1) # gamma from 0.1 to 10 with 0.1 spacing.
 crlb_ = crlb(sigma, N_data)
 print(f"Detected {cpu_count()} threads")
 print(f"Running Monte Carlo - Gamma on {cpu_count()} thread")
-with Pool(cpu_count()) as pool:
-    result = pool.map(compute_for_each_gamma, gamma_list)
-# print(result)
+
+pool = Pool(cpu_count())
+result = list(tqdm.tqdm(pool.imap(compute_for_each_gamma, gamma_list), total=len(gamma_list)))
+
 print("Done.")
 mse_mle_ret = []
 mse_map_ret = []
