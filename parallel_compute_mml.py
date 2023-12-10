@@ -24,7 +24,7 @@ def compute_for_each_gamma(gamma):
     mse_map = []
     mse_mmse = []
 
-    for _ in range(N_sims):
+    for i in range(N_sims):
         n = np.random.randn(N_data)*sigma
         s = np.random.laplace(scale=gamma, size=N_data)
         x = n + s
@@ -32,17 +32,17 @@ def compute_for_each_gamma(gamma):
         obj_min = np.inf
         gamma_est, sigma_est = -1, -1
         # run MML estimations a few times and pick the pair that maximize the likelihood
-        for _ in range(N_MML_estimates):
-            gamma_est, sigma_est = -1, -1
+        for j in range(N_MML_estimates):
+            # print(gamma, i, j)
             gamma_est_, sigma_est_ = -1, -1
             while gamma_est_ is None or gamma_est_ == np.nan or gamma_est_ < 0 or sigma_est_ is None or sigma_est_ == np.nan or sigma_est_ < 0:
                 # estimate hyper parameters
                 gamma_init = gamma + np.random.randn()
-                while gamma_init < 0:
+                while gamma_init <= 0:
                     gamma_init = gamma + np.random.randn()
                     
                 sigma_init = sigma + np.random.randn()
-                while sigma_init < 0:
+                while sigma_init <= 0:
                     sigma_init = sigma + np.sqrt(0.1)*np.random.randn() # variance 0.1
 
                 gamma_est_, sigma_est_ = gradient_descent_line_search(gamma_init, sigma_init, x, steps=50, default_alpha=0.001)
@@ -73,7 +73,7 @@ crlb_ = crlb(sigma, N_data)
 print(f"Detected {cpu_count()} threads")
 print(f"Running Monte Carlo - Gamma on {cpu_count()} thread")
 
-pool = Pool(cpu_count())
+pool = Pool(5)
 result = list(tqdm.tqdm(pool.imap(compute_for_each_gamma, gamma_list), total=len(gamma_list)))
 
 # print(result)

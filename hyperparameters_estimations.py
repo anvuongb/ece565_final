@@ -1,6 +1,7 @@
 from scipy.optimize import line_search
 import numpy as np
 from scipy.stats import norm
+import traceback
 
 def grad_gamma(init_point, X):
     gamma, sigma = init_point[0], init_point[1]
@@ -51,8 +52,6 @@ def ml_objective_gamma_sigma(init_point, X):
 
 def gradient_descent_line_search(gamma_init, sigma_init, X, steps=50, default_alpha=0.001):
     init_point = np.array([gamma_init, sigma_init])
-    steps = 50
-    default_alpha = 0.001
     
     try:
         # first run outside loop
@@ -65,7 +64,7 @@ def gradient_descent_line_search(gamma_init, sigma_init, X, steps=50, default_al
         new_fval = ml_objective_gamma_sigma(new_point, X)
         curr_point = new_point
 
-        for i in range(steps-1):
+        for i in range(steps):
             d = grad_total(curr_point, X)
             delta = -d/np.linalg.norm(d)
             new_alpha, _, _, new_fval, old_fval, _ = line_search(ml_objective_gamma_sigma, grad_total, curr_point, delta, args=([X]), old_fval=new_fval, old_old_fval=old_fval)
@@ -77,5 +76,6 @@ def gradient_descent_line_search(gamma_init, sigma_init, X, steps=50, default_al
         if curr_point[0] == np.nan or curr_point[1] == np.nan:
             return None, None
         return curr_point[0], curr_point[1]
-    except:
+    except Exception as e:
+        # print(traceback.format_exc())
         return None, None
