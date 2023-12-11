@@ -73,7 +73,7 @@ crlb_ = crlb(sigma, N_data)
 print(f"Detected {cpu_count()} threads")
 print(f"Running Monte Carlo - Gamma on {cpu_count()} thread")
 
-pool = Pool(5)
+pool = Pool(12)
 result = list(tqdm.tqdm(pool.imap(compute_for_each_gamma, gamma_list), total=len(gamma_list)))
 
 # print(result)

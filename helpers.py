@@ -32,3 +32,11 @@ def mmse_estimate(X, sigma, gamma):
             (0-np.exp(-1/2/(sigma**2)*(X-sigma**2/gamma)**2)) - (X - sigma**2/gamma) * norm.cdf((X-sigma**2/gamma)/sigma))
     return (expr1 + expr2)/const
 
+# estimator for gamma only
+def mle_gamma(X):
+    return np.mean(np.abs(X), axis=0)
+
+def crlb_gamma(N, gamma):
+    FIM = N/(gamma**2)
+    return 1/FIM
+
